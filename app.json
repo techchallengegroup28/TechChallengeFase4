@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "Pedidos",
+    "slug": "pedidos",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.filipemuliterno.Pedidos"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.filipemuliterno.Pedidos",
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "692051ea-b148-49cc-ba79-2790fbea2e0d"
+      }
+    },
+    "owner": "filipemuliterno",
+    "plugins": [
+      "expo-localization"
+    ]
+  }
+}
