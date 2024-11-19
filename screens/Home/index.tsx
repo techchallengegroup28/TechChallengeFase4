@@ -1,6 +1,6 @@
 import styles from "./styles";
 import React from "react";
-import { SafeAreaView, View, Text } from "react-native";
+import { SafeAreaView, View, Text, Button } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Header from "../../components/Header";
 
@@ -17,6 +17,10 @@ const Home: React.FC<HomeScreenProps> = ({ navigation }) => {
         <Text style={styles.descriptionText}>
           Aqui é onde o conteúdo principal será exibido.
         </Text>
+        <Button
+        title="Editar"
+        onPress={() => navigation.navigate("GerenciarPost",  0 )}
+      />
       </View>
     </SafeAreaView>
   );
