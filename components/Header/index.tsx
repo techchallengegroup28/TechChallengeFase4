@@ -31,6 +31,11 @@ const Header = ({ navigation }: HeaderProps) => {
     checkToken();
   }, [navigation]);
 
+  const handleNavegarParaUsuarios = () => {
+  //  navigation.navigate('RegisterUser', { user });
+    navigation.navigate('RegisterUser',{ id: 11});
+  }
+
   // Função para deslogar
   async function sair() {
     Alert.alert(
@@ -73,7 +78,7 @@ const Header = ({ navigation }: HeaderProps) => {
       </Text>
       {user?.tipo_usuario === "professor" && (
         <TouchableOpacity>
-          <Icon name="settings" size={24} color="#ed145b" />
+          <Icon name="settings" size={24} color="#ed145b" onPress={handleNavegarParaUsuarios}/>
         </TouchableOpacity>
       )}
       <TouchableOpacity onPress={sair} style={styles.button}>
