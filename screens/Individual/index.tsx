@@ -16,6 +16,7 @@ import styles from "./styles";
 import api from "../../utils/api";
 import Header from "../../components/Header";
 import { RootStackParamList } from "../../types/navigation";
+import { format } from "date-fns";
 
 // Define the interface for navigation props
 type Props = NativeStackScreenProps<RootStackParamList, "Individual">;
@@ -35,6 +36,13 @@ const Individual: React.FC<Props> = ({ navigation, route }) => {
   const { id } = route.params; // Extract the ID from route params
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+
+  const formattedDataPostagem = post?.datapostagem
+    ? format(new Date(post.datapostagem), "dd/MM/yyyy")
+    : "";
+  const formattedDataAtualizacao = post?.dataatualizacao
+    ? format(new Date(post.dataatualizacao), "dd/MM/yyyy")
+    : "";
 
   // Function to fetch post data
   const fetchPost = async () => {
@@ -96,9 +104,9 @@ const Individual: React.FC<Props> = ({ navigation, route }) => {
           <Text style={styles.descricao}>{post.descricao}</Text>
           <Text style={styles.conteudo}>{post.conteudo}</Text>
           <View style={styles.dts}>
-            <Text style={styles.dt}>Postado dia: {post.datapostagem}</Text>
+            <Text style={styles.dt}>Postado dia: {formattedDataPostagem}</Text>
             <Text style={styles.dt}>
-              Última Atualização: {post.dataatualizacao}
+              Última Atualização: {formattedDataAtualizacao}
             </Text>
           </View>
         </View>
