@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Pedidos",
-    "slug": "pedidos",
+    "name": "Posts",
+    "slug": "posts",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,18 +13,15 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.filipemuliterno.Pedidos"
+      "bundleIdentifier": "com.grupotechchallenge.Posts"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.filipemuliterno.Pedidos",
-      "permissions": [
-        "INTERNET",
-        "ACCESS_NETWORK_STATE"
-      ]
+      "package": "com.grupotechchallenge.Posts",
+      "permissions": ["INTERNET", "ACCESS_NETWORK_STATE"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -34,9 +31,7 @@
         "projectId": "692051ea-b148-49cc-ba79-2790fbea2e0d"
       }
     },
-    "owner": "filipemuliterno",
-    "plugins": [
-      "expo-localization"
-    ]
+    "owner": "grupotechchallenge",
+    "plugins": ["expo-localization"]
   }
 }

@@ -1,19 +1,23 @@
-import styles from "./styles";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import styles from "./styles";
+import { User } from "../../types/User";
 import tokenVerify from "../../utils/login";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import capitalizeFirstLetter from "../../utils/capitalize";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { User } from "../../types/User";
+import { RootStackParamList } from "../../types/navigation";
+import { Link } from "@react-navigation/native";
 
-type HeaderProps = {
-  navigation: NativeStackNavigationProp<any>;
+type HeaderProps<T extends keyof RootStackParamList> = {
+  navigation: NativeStackNavigationProp<RootStackParamList, T>;
 };
 
-const Header = ({ navigation }: HeaderProps) => {
-  const [user, setUser] = useState<User>();
+const Header = <T extends keyof RootStackParamList>({
+  navigation,
+}: HeaderProps<T>) => {
+  const [user, setUser] = React.useState<User>();
 
   // Verificação de autenticidade de token
   useEffect(() => {
@@ -73,7 +77,9 @@ const Header = ({ navigation }: HeaderProps) => {
       </Text>
       {user?.tipo_usuario === "professor" && (
         <TouchableOpacity>
-          <Icon name="settings" size={24} color="#ed145b" />
+          <Link to="/Users">
+            <Icon name="settings" size={24} color="#ed145b" />
+          </Link>
         </TouchableOpacity>
       )}
       <TouchableOpacity onPress={sair} style={styles.button}>
