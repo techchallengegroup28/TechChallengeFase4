@@ -15,6 +15,7 @@ import {
   createPost,
   updatePost,
   getPostById,
+  payload,
 } from "../../Services/PostService";
 import * as ImagePicker from "expo-image-picker";
 import { RouteProp } from "@react-navigation/native";
@@ -25,6 +26,10 @@ import {
 import { RootStackParamList } from "../../types/navigation";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/Header";
+import { tokenVerify } from "../../utils/login";
+import { User } from "../../types/User";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { redirecionarParaLogin } from "../../utils/navegationUtils";
 
 type GerenciarPostScreenRouteProp = RouteProp<
   RootStackParamList,
@@ -50,6 +55,7 @@ type PostScreenProps = {
 };
 
 const EditarPost: React.FC<Props> = ({ navigation, route }) => {
+  const [user, setUser] = React.useState<User>();
   const { idPost } = route.params;
   const [serverMessage, setServerMessage] = useState<string>();
   const [initialValues, setInitialValues] = useState<PostFormValues>({
@@ -60,6 +66,18 @@ const EditarPost: React.FC<Props> = ({ navigation, route }) => {
   });
 
   useEffect(() => {
+    const checkToken = async () => {
+      const user = await tokenVerify();
+      if (!user) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Login" }],
+        });
+      } else {
+        setUser(user.user);
+      }
+    };
+    checkToken();
     if (idPost) {
       (async () => {
         try {
@@ -109,7 +127,14 @@ const EditarPost: React.FC<Props> = ({ navigation, route }) => {
 
   const handleSubmit = async (values: PostFormValues) => {
     try {
-      const payload = {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) {
+        Alert.alert("Erro", "Token não encontrado.");
+        redirecionarParaLogin({ navigation });
+        return;
+      }
+
+      const payload: payload = {
         titulo: values.titulo,
         descricao: values.descricao,
         conteudo: values.conteudo,
@@ -117,21 +142,15 @@ const EditarPost: React.FC<Props> = ({ navigation, route }) => {
       };
 
       if (idPost) {
-        await updatePost(
-          payload,
-          idPost,
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibm9tZSI6IkFkbWluIiwiZW1haWwiOiJhZG1pbkBhZG1pbi5jb20iLCJ0aXBvX3VzdWFyaW9faWQiOjEsInRpcG9fdXN1YXJpbyI6InByb2Zlc3NvciIsImlhdCI6MTczMTk0MTgyNX0.snVArrrcHwXqws4I23Qr8xw2I3WurN7VWPC9-JYOeN4"
-        );
+        await updatePost(payload, idPost, token);
         setServerMessage("Post atualizado com sucesso!");
       } else {
-        await createPost(
-          payload,
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibm9tZSI6IkFkbWluIiwiZW1haWwiOiJhZG1pbkBhZG1pbi5jb20iLCJ0aXBvX3VzdWFyaW9faWQiOjEsInRpcG9fdXN1YXJpbyI6InByb2Zlc3NvciIsImlhdCI6MTczMTk0MTgyNX0.snVArrrcHwXqws4I23Qr8xw2I3WurN7VWPC9-JYOeN4"
-        );
+        await createPost(payload, token);
         setServerMessage("Post criado com sucesso!");
       }
 
       Alert.alert("Sucesso", serverMessage || "");
+      navigation.navigate("Home");
     } catch (error) {
       Alert.alert("Erro", "Ocorreu um erro ao enviar os dados.");
     }
@@ -156,7 +175,7 @@ const EditarPost: React.FC<Props> = ({ navigation, route }) => {
           touched,
         }) => (
           <View>
-            <Text style={styles.label}>Título - {idPost}</Text>
+            <Text style={styles.label}>Título</Text>
             <TextInput
               style={[styles.input, styles.textArea]}
               onChangeText={handleChange("titulo")}

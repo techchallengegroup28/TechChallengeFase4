@@ -1,5 +1,5 @@
 import styles from "./styles";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   SafeAreaView,
   View,
@@ -18,7 +18,8 @@ import api from "../../utils/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RootStackParamList } from "../../types/navigation";
 import { User } from "../../types/User";
-import tokenVerify from "../../utils/login";
+import { tokenVerify } from "../../utils/login";
+import { useFocusEffect } from "@react-navigation/native";
 
 type HomeScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Home">;
@@ -49,13 +50,25 @@ const Home: React.FC<HomeScreenProps> = ({ navigation }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setData(response.data);
+      if (response.status === 200) {
+        setData(response.data);
+      } else {
+        console.error(`Erro ao buscar os posts: Status ${response.status}`);
+        Alert.alert("Erro", "Ocorreu um erro ao buscar os posts.");
+      }
     } catch (error) {
       console.error("Erro ao buscar os posts:", error);
+      Alert.alert("Erro", "Ocorreu um erro ao buscar os posts.");
     } finally {
       setLoading(false);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchPosts();
+    }, [])
+  );
 
   useEffect(() => {
     const checkToken = async () => {

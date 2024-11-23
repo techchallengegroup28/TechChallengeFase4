@@ -1,14 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import styles from "./styles";
 import { User } from "../../types/User";
-import tokenVerify from "../../utils/login";
+import { tokenVerify, updateToken } from "../../utils/login";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import capitalizeFirstLetter from "../../utils/capitalize";
 import { RootStackParamList } from "../../types/navigation";
-import { Link } from "@react-navigation/native";
+import { Link, useFocusEffect } from "@react-navigation/native";
 
 type HeaderProps<T extends keyof RootStackParamList> = {
   navigation: NativeStackNavigationProp<RootStackParamList, T>;
@@ -17,23 +17,39 @@ type HeaderProps<T extends keyof RootStackParamList> = {
 const Header = <T extends keyof RootStackParamList>({
   navigation,
 }: HeaderProps<T>) => {
-  const [user, setUser] = React.useState<User>();
+  const [user, setUser] = useState<User>();
 
-  // Verificação de autenticidade de token
-  useEffect(() => {
-    const checkToken = async () => {
-      const user = await tokenVerify();
-      if (!user) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Login" }],
-        });
-      } else {
-        setUser(user.user);
-      }
-    };
-    checkToken();
-  }, [navigation]);
+  // Função para verificar e atualizar o token, se necessário
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkTokenAndUpdate = async () => {
+        const tokenUpdated = await updateToken(); // Atualiza o token se necessário
+        if (tokenUpdated) {
+          const userData = await tokenVerify(); // Verifica e obtém o usuário
+          if (!userData) {
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "Login" }],
+            });
+          } else {
+            setUser(userData.user);
+          }
+        } else {
+          const userData = await tokenVerify(); // Verifica o token sem atualização
+          if (!userData) {
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "Login" }],
+            });
+          } else {
+            setUser(userData.user);
+          }
+        }
+      };
+
+      checkTokenAndUpdate();
+    }, [navigation])
+  );
 
   // Função para deslogar
   async function sair() {

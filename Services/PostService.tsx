@@ -1,49 +1,88 @@
-export interface payload {
-    titulo: string;
-    descricao: string;
-    conteudo: string;
-    imagem?: string | null;
-  }
+import { Alert } from "react-native";
+import api from "../utils/api";
+import { AxiosError } from "axios";
 
-  export const createPost = async (payload: any, token: string): Promise<void> => {
-    const response = await fetch("http://10.0.2.2:3000/api/posts", {
-      method: "POST",
+export interface payload {
+  titulo: string;
+  descricao: string;
+  conteudo: string;
+  imagem?: string | File | null;
+}
+
+export const createPost = async (
+  payload: payload,
+  token: string
+): Promise<void> => {
+  try {
+    const response = await api.post(`posts`, payload, {
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+        Accept: "*/*",
       },
-      body: JSON.stringify(payload),
     });
-  
-    if (!response.ok) {
-      throw new Error("Erro ao criar post.");
+
+    if (response.data.error) {
+      Alert.alert(response.data.error);
     }
-  };
-  
-  export const updatePost = async (payload: any, id: number, token: string): Promise<void> => {
-    const response = await fetch(`http://10.0.2.2:3000/api/posts/${id}`, {
-      method: "PUT",
+  } catch (error: AxiosError | any) {
+    if (error.response) {
+      Alert.alert(error.response.data.error);
+    } else {
+      Alert.alert(
+        "Erro",
+        `Não foi possível conectar ao servidor. Error: ${error.message}`
+      );
+    }
+  }
+};
+
+export const updatePost = async (
+  payload: payload,
+  id: number,
+  token: string
+): Promise<void> => {
+  try {
+    const response = await api.put(`posts/${id}`, payload, {
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+        Accept: "*/*",
       },
-      body: JSON.stringify(payload),
     });
-  
-    if (!response.ok) {
-      throw new Error("Erro ao atualizar post.");
+
+    if (response.data.error) {
+      Alert.alert(response.data.error);
     }
-  };
-  
-  export const getPostById = async (id: number): Promise<any> => {
-    const response = await fetch(`http://10.0.2.2:3000/api/posts/${id}`, {
-        method: "GET",
-    });
-  
-    if (!response.ok) {
-      throw new Error("Erro ao buscar post.");
+  } catch (error: AxiosError | any) {
+    if (error.response) {
+      Alert.alert(error.response.data.error);
+    } else {
+      Alert.alert(
+        "Erro",
+        `Não foi possível conectar ao servidor. Error: ${error.message}`
+      );
     }
-  
-    return response.json();
-  };
-  
+  }
+};
+
+export const getPostById = async (id: number): Promise<any> => {
+  try {
+    const response = await api.get(`posts/${id}`);
+
+    if (response.data.error) {
+      Alert.alert(response.data.error);
+    }
+
+    return response.data;
+  } catch (error: AxiosError | any) {
+    if (error.response) {
+      Alert.alert(error.response.data.error);
+    } else {
+      Alert.alert(
+        "Erro",
+        `Não foi possível conectar ao servidor. Error: ${error.message}`
+      );
+    }
+  }
+};

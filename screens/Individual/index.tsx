@@ -6,6 +6,7 @@ import {
   Image,
   ActivityIndicator,
   ScrollView,
+  Alert,
 } from "react-native";
 import {
   NativeStackNavigationProp,
@@ -56,7 +57,8 @@ const Individual: React.FC<Props> = ({ navigation, route }) => {
       });
       setPost(response.data);
     } catch (error) {
-      console.error(`Error fetching post ${id}:`, error);
+      console.error(`Error ao buscar post ${id}:`, error);
+      Alert.alert("Erro", "Ocorreu um erro ao buscar o post.");
     } finally {
       setLoading(false);
     }

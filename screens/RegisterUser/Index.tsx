@@ -8,9 +8,10 @@ import api from "../../utils/api";
 import { User } from "../../types/User";
 import {
   redirecionarParaLogin,
-  redirecionarParaHome,
+  redirecionarParaUsuarios,
 } from "../../utils/navegationUtils";
 import styles from "./styles";
+import { AxiosError } from "axios";
 
 type UsuariosScreenProps = {
   navigation: NativeStackNavigationProp<any>;
@@ -25,11 +26,6 @@ const RegisterUser = ({ navigation, route }: UsuariosScreenProps) => {
   const [usuario, setUser] = useState<User>();
 
   useEffect(() => {
-    // if (route.params && route.params.user) {
-    //   const {user} = route.params;
-    //   setUser(user);
-    //   preencherCampos(user);
-    // }
     if (route.params && route.params.id) {
       getUser(route.params.id);
     }
@@ -38,7 +34,7 @@ const RegisterUser = ({ navigation, route }: UsuariosScreenProps) => {
   const preencherCampos = (user: User) => {
     setName(user.nome || "");
     setEmail(user.email || "");
-    setUserType(user.tipo_usuario_id || 1);
+    setUserType(user.tipo_usuario_id ? user.tipo_usuario_id : 1);
   };
 
   const postUser = async () => {
@@ -62,16 +58,20 @@ const RegisterUser = ({ navigation, route }: UsuariosScreenProps) => {
       );
 
       if (response.data.error) {
-        Alert.alert("Erro", response.data.error);
+        Alert.alert("Erro: ", response.data.error);
       } else {
-        Alert.alert("Sucesso", "Usuário cadastrado com sucesso!");
-        redirecionarParaHome({ navigation });
+        Alert.alert("Usuário cadastrado com sucesso!");
+        redirecionarParaUsuarios({ navigation });
       }
-    } catch (error: any) {
-      Alert.alert(
-        "Erro",
-        `Não foi possível conectar ao servidor. Error: ${error.message}`
-      );
+    } catch (error: AxiosError | any) {
+      if (error.response) {
+        Alert.alert(error.response.data.error);
+      } else {
+        Alert.alert(
+          "Erro",
+          `Não foi possível conectar ao servidor. Error: ${error.message}`
+        );
+      }
     }
   };
 
@@ -100,13 +100,17 @@ const RegisterUser = ({ navigation, route }: UsuariosScreenProps) => {
         Alert.alert("Erro: ", response.data.error);
       } else {
         Alert.alert("Sucesso", "Usuário atualizado com sucesso!");
-        redirecionarParaHome({ navigation });
+        redirecionarParaUsuarios({ navigation });
       }
-    } catch (error: any) {
-      Alert.alert(
-        "Erro",
-        `Não foi possível conectar ao servidor. Error: ${error.message}`
-      );
+    } catch (error: AxiosError | any) {
+      if (error.response) {
+        Alert.alert(error.response.data.error);
+      } else {
+        Alert.alert(
+          "Erro",
+          `Não foi possível conectar ao servidor. Error: ${error.message}`
+        );
+      }
     }
   };
 
@@ -126,20 +130,19 @@ const RegisterUser = ({ navigation, route }: UsuariosScreenProps) => {
         setUser(user);
         preencherCampos(user);
       }
-    } catch (error: any) {
-      Alert.alert(
-        "Erro",
-        `Não foi possível conectar ao servidor. Error: ${error.message}`
-      );
+    } catch (error: AxiosError | any) {
+      if (error.response) {
+        Alert.alert(error.response.data.error);
+      } else {
+        Alert.alert(
+          "Erro",
+          `Não foi possível conectar ao servidor. Error: ${error.message}`
+        );
+      }
     }
   };
 
   const handleSalvar = async () => {
-    if (!name || !email || !password || !userType) {
-      Alert.alert("Erro", "Por favor, preencha todos os campos!");
-      return;
-    }
-
     const token = await AsyncStorage.getItem("token");
 
     if (!token) {
@@ -150,6 +153,10 @@ const RegisterUser = ({ navigation, route }: UsuariosScreenProps) => {
     if (usuario?.id) {
       putUser();
     } else {
+      if (!name || !email || !password || !userType) {
+        Alert.alert("Erro", "Por favor, preencha todos os campos!");
+        return;
+      }
       postUser();
     }
   };
@@ -168,7 +175,9 @@ const RegisterUser = ({ navigation, route }: UsuariosScreenProps) => {
       />
 
       <Text style={styles.label}>Senha</Text>
-      <Text style={styles.passwordLabel}>Preencha para alterar a senha</Text>
+      {usuario?.id && (
+        <Text style={styles.passwordLabel}>Preencha para alterar a senha</Text>
+      )}
       <TextInput
         style={styles.input}
         secureTextEntry
@@ -185,8 +194,8 @@ const RegisterUser = ({ navigation, route }: UsuariosScreenProps) => {
           style={styles.picker}
           itemStyle={styles.pickeritem}
         >
-          <Picker.Item label="Professor" value="1" />
-          <Picker.Item label="Aluno" value="2" />
+          <Picker.Item label="Professor" value={1} />
+          <Picker.Item label="Aluno" value={2} />
         </Picker>
       </View>
 

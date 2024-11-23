@@ -1,5 +1,5 @@
 import styles from "./styles";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { SafeAreaView, View, Text, Alert } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Header from "../../components/Header";
@@ -9,6 +9,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/Ionicons";
 import { RootStackParamList } from "../../types/navigation";
+import { useFocusEffect } from "@react-navigation/native";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Users">;
 
@@ -33,6 +34,12 @@ const Users: React.FC<Props> = ({ navigation, route }) => {
       setLoading(false);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUsers();
+    }, [])
+  );
 
   useEffect(() => {
     fetchUsers();
@@ -65,6 +72,7 @@ const Users: React.FC<Props> = ({ navigation, route }) => {
               );
             } catch (error) {
               console.error("Erro ao excluir usuário", error);
+              Alert.alert("Erro", "Ocorreu um erro ao excluir o usuário.");
             } finally {
               setLoading(false);
             }

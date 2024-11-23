@@ -3,10 +3,12 @@ import React, { useEffect, useState } from "react";
 import { View, TextInput, TouchableOpacity, Alert, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../../utils/api";
-import tokenVerify from "../../utils/login";
+import { tokenVerify } from "../../utils/login";
 
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
+import styles from "./styles";
+import { AxiosError } from "axios";
 type LoginScreenProps = {
   navigation: StackNavigationProp<any>;
   route: RouteProp<any>;
@@ -44,12 +46,10 @@ const Login = ({ navigation }: LoginScreenProps) => {
           routes: [{ name: "Home" }],
         });
       }
-    } catch (error) {
-      console.error("Erro na requisição:", error);
-      Alert.alert(
-        "Erro",
-        "Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente."
-      );
+    } catch (error: AxiosError | any) {
+      if (error.response) {
+        Alert.alert(error.response.data.error);
+      }
     }
   };
 
@@ -82,44 +82,5 @@ const Login = ({ navigation }: LoginScreenProps) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#000",
-    padding: 16,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#ed145b",
-    marginBottom: 24,
-  },
-  input: {
-    width: "100%",
-    padding: 12,
-    marginVertical: 8,
-    borderWidth: 1,
-    borderColor: "#151819",
-    borderRadius: 8,
-    backgroundColor: "#151819",
-    color: "#fff",
-  },
-  button: {
-    width: "100%",
-    padding: 12,
-    backgroundColor: "#ed145b",
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 16,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});
 
 export default Login;

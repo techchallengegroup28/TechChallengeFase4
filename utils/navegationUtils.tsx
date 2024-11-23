@@ -13,9 +13,8 @@ export const redirecionarParaLogin = ({ navigation }: UsuariosScreenProps) => {
   });
 };
 
-export const redirecionarParaHome = ({ navigation }: UsuariosScreenProps) => {
-  navigation.reset({
-    index: 0,
-    routes: [{ name: "Home" }],
-  });
+export const redirecionarParaUsuarios = ({
+  navigation,
+}: UsuariosScreenProps) => {
+  navigation.navigate("Users", { refresh: true });
 };
