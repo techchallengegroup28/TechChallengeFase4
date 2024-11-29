@@ -1,6 +1,6 @@
 # PosTech
 
-Projeto para a pós da fiap, aplicativo de uma aplicação para posts destinado a alunos e professores. Para essse projeto utilizamos as seguintes tecnologias:
+Projeto para a pós da fiap, aplicativo gerenciamento de posts destinado a alunos e professores. Para essse projeto utilizamos as seguintes tecnologias:
 
 **Aplicativo:**
 
@@ -36,3 +36,5 @@ npx expo start
 
 **Android:** <p>No terminal do Expo, pressione "a" para abrir no emulador Android.</p>
 **iOS:** <p>Pressione "i" para abrir no simulador iOS.</p>
+
+<p>Obs.: Mudar a baseURL no arquivo utils/api.tsx para conexão com o back-end.</p>
